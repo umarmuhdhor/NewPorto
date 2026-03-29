@@ -1,0 +1,9 @@
+.curtain {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  z-index: 10000;
+  transform: scaleY(1);
+  transform-origin: bottom;
+  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+}

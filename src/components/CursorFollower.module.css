@@ -1,0 +1,43 @@
+.dot, .ring {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.dot {
+  width: 10px; height: 10px;
+  background: var(--black);
+  border: 2px solid var(--cream); /* Light border to contrast on dark backgrounds */
+  margin-left: -5px;
+  margin-top: -5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.ring {
+  width: 44px; height: 44px;
+  border: 1.5px solid rgba(15, 15, 15, 0.4); /* Semi-transparent black */
+  margin-left: -22px;
+  margin-top: -22px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(3px); /* Elegant glassmorphic effect */
+  transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              margin 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              border-color 0.3s, background-color 0.3s;
+}
+
+.ring.hover {
+  width: 64px; height: 64px;
+  margin-left: -32px;
+  margin-top: -32px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 2px solid var(--black);
+  backdrop-filter: blur(0px); /* Remove blur on hover for clarity */
+}
+
+@media (pointer: coarse) {
+  .dot, .ring { display: none; }
+}

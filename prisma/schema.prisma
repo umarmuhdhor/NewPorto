@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  hashedPassword String
+  createdAt      DateTime @default(now())
+}
+
+model Profile {
+  id       String  @id @default(cuid())
+  name     String  @default("Your Name")
+  title    String  @default("Your Title")
+  bio      String  @default("Your bio goes here...")
+  photoUrl String  @default("")
+  cvUrl    String  @default("")
+}
+
+model SocialLink {
+  id       String @id @default(cuid())
+  platform String
+  url      String
+  icon     String @default("")
+  order    Int    @default(0)
+}
+
+model Experience {
+  id           String @id @default(cuid())
+  title        String
+  organization String
+  description  String
+  startDate    String
+  endDate      String @default("Present")
+  type         String @default("experience")
+  order        Int    @default(0)
+}
+
+model Tool {
+  id       String @id @default(cuid())
+  name     String
+  iconUrl  String @default("")
+  category String @default("Language")
+  order    Int    @default(0)
+}
+
+model Project {
+  id          String @id @default(cuid())
+  title       String
+  subtitle    String @default("")
+  description String
+  backstory   String @default("")
+  flow        String @default("")
+  techStack   String @default("")
+  imageUrl    String @default("")
+  status      String @default("Completed")
+  codeUrl     String @default("")
+  liveUrl     String @default("")
+  role        String @default("")
+  date        String @default("")
+  order       Int    @default(0)
+}
+
+model Certificate {
+  id          String @id @default(cuid())
+  title       String
+  issuer      String
+  description String @default("")
+  year        String @default("")
+  type        String @default("Certification")
+  imageUrl    String @default("")
+  order       Int    @default(0)
+}

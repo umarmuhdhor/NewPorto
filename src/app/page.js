@@ -1,66 +1,65 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import prisma from '@/lib/prisma';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+import About from '@/components/About';
+import Experience from '@/components/Experience';
+import Tools from '@/components/Tools';
+import Projects from '@/components/Projects';
+import Certificates from '@/components/Certificates';
+import Contact from '@/components/Contact';
+import Footer from '@/components/Footer';
+import GSAPAnimations from '@/components/GSAPAnimations';
+import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+import MarqueeDivider from '@/components/MarqueeDivider';
 
-export default function Home() {
+export async function generateMetadata() {
+  const profile = await prisma.profile.findFirst();
+  return {
+    title: profile?.name ? `${profile.name} — Portfolio` : 'Portfolio',
+    description: profile?.bio?.replace(/\*\*/g, '') || 'Personal Portfolio Website',
+    openGraph: {
+      title: profile?.name ? `${profile.name} — Portfolio` : 'Portfolio',
+      description: profile?.bio?.replace(/\*\*/g, '') || 'Personal Portfolio Website',
+      type: 'website',
+    },
+  };
+}
+
+export default async function HomePage() {
+  const [profile, socialLinks, experiences, tools, projects, certificates] = await Promise.all([
+    prisma.profile.findFirst(),
+    prisma.socialLink.findMany({ orderBy: { order: 'asc' } }),
+    prisma.experience.findMany({ orderBy: { order: 'asc' } }),
+    prisma.tool.findMany({ orderBy: { order: 'asc' } }),
+    prisma.project.findMany({ orderBy: { order: 'asc' } }),
+    prisma.certificate.findMany({ orderBy: { order: 'asc' } }),
+  ]);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <GSAPAnimations />
+      <SmoothScrollProvider />
+      <Navbar />
+      <main>
+        <Hero profile={profile} projects={projects} experiences={experiences} />
+        <MarqueeDivider text="ABOUT ME" />
+        <About profile={profile} socialLinks={socialLinks} />
+        <MarqueeDivider text="EXPERIENCE" reverse />
+        <Experience experiences={experiences} />
+        <MarqueeDivider text="TECH STACK" />
+        <Tools tools={tools} />
+        <MarqueeDivider text="PROJECTS" reverse />
+        <Projects projects={projects} />
+        {certificates.length > 0 && (
+          <>
+            <MarqueeDivider text="CERTIFICATES" />
+            <Certificates certificates={certificates} />
+          </>
+        )}
+        <MarqueeDivider text="GET IN TOUCH" reverse />
+        <Contact profile={profile} />
       </main>
-    </div>
+      <Footer profile={profile} socialLinks={socialLinks} />
+    </>
   );
 }
