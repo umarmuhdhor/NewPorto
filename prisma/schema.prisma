@@ -39,6 +39,7 @@ model Experience {
   startDate    String
   endDate      String @default("Present")
   type         String @default("experience")
+  images       String @default("[]")
   order        Int    @default(0)
 }
 

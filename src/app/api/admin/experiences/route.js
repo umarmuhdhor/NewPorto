@@ -10,13 +10,13 @@ const requireAuth = async () => {
 };
 
 const safeFields = (body) => ({
-  title:       body.title       ?? '',
-  company:     body.company     ?? '',
-  location:    body.location    ?? null,
-  startDate:   body.startDate   ?? null,
-  endDate:     body.endDate     ?? null,
-  current:     body.current     === true,
-  description: body.description ?? null,
+  title:        body.title        ?? '',
+  organization: body.organization ?? '',
+  description:  body.description  ?? '',
+  startDate:    body.startDate    ?? '',
+  endDate:      body.endDate      ?? 'Present',
+  type:         body.type         ?? 'experience',
+  images:       body.images       ?? '[]',
 });
 
 export async function GET() {
