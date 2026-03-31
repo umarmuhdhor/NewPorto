@@ -50,21 +50,50 @@ function ExperienceItem({ item, index, openModal }) {
       <p className={styles.itemOrg}>{item.organization}</p>
       <div className={styles.itemDivider} aria-hidden="true" />
       <ul className={styles.bulletList}>
-        {item.description.split('\n').map((line, i) =>
-          line.trim() ? <li key={i}>{line.replace(/^[-•]\s*/, '')}</li> : null
-        )}
+        {(() => {
+          const lines = item.description.split('\n').map(l => l.trim()).filter(Boolean);
+          let wordCount = 0;
+          const previewLines = [];
+
+          for (const line of lines) {
+            const lineWords = line.split(/\s+/).filter(Boolean);
+            if (wordCount + lineWords.length > 100) {
+              const remaining = 100 - wordCount;
+              if (remaining > 0) {
+                previewLines.push(lineWords.slice(0, remaining).join(' ') + '...');
+              } else if (previewLines.length > 0) {
+                previewLines[previewLines.length - 1] += '...';
+              }
+              break;
+            } else {
+              previewLines.push(line);
+              wordCount += lineWords.length;
+            }
+          }
+
+          return previewLines.map((line, i) =>
+            <li key={i}>{line.replace(/^[-•]\s*/, '')}</li>
+          );
+        })()}
       </ul>
       {(() => {
         let imgs = [];
         try { imgs = JSON.parse(item.images || '[]'); } catch(e){}
-        if (imgs.length > 0) {
-          return (
-            <button className={styles.detailsBtn} onClick={() => openModal(item)}>
-              View Attached Media ({imgs.length})
-            </button>
-          );
-        }
-        return null;
+        const lines = item.description.split('\n').map(l => l.trim()).filter(Boolean);
+        const totalWords = lines.reduce((acc, line) => acc + line.split(/\s+/).filter(Boolean).length, 0);
+        const isTruncated = totalWords > 100;
+
+        return (
+          <button className={styles.detailsBtn} onClick={() => openModal(item)}>
+            {imgs.length > 0 && isTruncated 
+              ? `Read more & View Media (${imgs.length})`
+              : isTruncated 
+                ? 'Read more'
+                : imgs.length > 0
+                  ? `View Attached Media (${imgs.length})`
+                  : 'View Details'}
+          </button>
+        );
       })()}
     </article>
   );
@@ -77,6 +106,7 @@ export default function Experience({ experiences }) {
   
   const [modalItem, setModalItem] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [directionStr, setDirectionStr] = useState('');
 
   const openModal = (item) => {
     setModalItem(item);
@@ -265,33 +295,51 @@ export default function Experience({ experiences }) {
               <h3 className={styles.modalTitle}>{modalItem.title}</h3>
               <button className={styles.closeBtn} onClick={closeModal}>✕</button>
             </div>
-            {(() => {
-              let imgs = [];
-              try { imgs = JSON.parse(modalItem.images || '[]'); } catch(e){}
-              if (imgs.length === 0) return null;
-              return (
-                <div className={styles.carousel}>
-                  {imgs.length > 1 && (
-                    <button className={`${styles.carouselBtn} ${styles.carouselBtnPrev}`} onClick={() => setCurrentImageIndex(i => i === 0 ? imgs.length - 1 : i - 1)}>
-                      ←
-                    </button>
+            <div className={styles.modalBody} data-lenis-prevent>
+              <div className={styles.modalDescription}>
+                <ul className={styles.bulletList}>
+                  {modalItem.description.split('\n').map((line, i) =>
+                    line.trim() ? <li key={i}>{line.replace(/^[-•]\s*/, '')}</li> : null
                   )}
-                  <img key={currentImageIndex} src={imgs[currentImageIndex]} alt="carousel item" className={styles.carouselImage} />
-                  {imgs.length > 1 && (
-                    <button className={`${styles.carouselBtn} ${styles.carouselBtnNext}`} onClick={() => setCurrentImageIndex(i => i === imgs.length - 1 ? 0 : i + 1)}>
-                      →
-                    </button>
-                  )}
-                  {imgs.length > 1 && (
-                    <div className={styles.carouselIndicators}>
-                      {imgs.map((_, idx) => (
-                        <button key={idx} onClick={() => setCurrentImageIndex(idx)} className={`${styles.indicator} ${idx === currentImageIndex ? styles.indicatorActive : ''}`} aria-label={`Go to slide ${idx + 1}`} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
+                </ul>
+              </div>
+              {(() => {
+                let imgs = [];
+                try { imgs = JSON.parse(modalItem.images || '[]'); } catch(e){}
+                if (imgs.length === 0) return null;
+                return (
+                  <div className={styles.carousel}>
+                    {imgs.length > 1 && (
+                      <button className={`${styles.carouselBtn} ${styles.carouselBtnPrev}`} onClick={() => {
+                        setDirectionStr(styles.slidePrev);
+                        setCurrentImageIndex(i => i === 0 ? imgs.length - 1 : i - 1);
+                      }}>
+                        ←
+                      </button>
+                    )}
+                    <img key={`${currentImageIndex}-${directionStr}`} src={imgs[currentImageIndex]} alt="carousel item" className={`${styles.carouselImage} ${directionStr || ''}`} />
+                    {imgs.length > 1 && (
+                      <button className={`${styles.carouselBtn} ${styles.carouselBtnNext}`} onClick={() => {
+                        setDirectionStr(styles.slideNext);
+                        setCurrentImageIndex(i => i === imgs.length - 1 ? 0 : i + 1);
+                      }}>
+                        →
+                      </button>
+                    )}
+                    {imgs.length > 1 && (
+                      <div className={styles.carouselIndicators}>
+                        {imgs.map((_, idx) => (
+                          <button key={idx} onClick={() => {
+                            setDirectionStr(idx > currentImageIndex ? styles.slideNext : styles.slidePrev);
+                            setCurrentImageIndex(idx);
+                          }} className={`${styles.indicator} ${idx === currentImageIndex ? styles.indicatorActive : ''}`} aria-label={`Go to slide ${idx + 1}`} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
           </div>
         </div>
       )}

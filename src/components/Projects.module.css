@@ -45,8 +45,12 @@
 /* Alternate rotations for scattered brutalist look */
 .card:nth-child(even) { transform: rotate(1.5deg); }
 .card:nth-child(odd) { transform: rotate(-1deg); }
-/* Hover resets fixed rotation to let JS 3D tilt shine but boosts shadow/zIndex */
-.card:hover { box-shadow: 10px 10px 0 var(--black); z-index: 10; }
+/* Stronger physical lift on hover */
+.card:hover { 
+  box-shadow: 14px 14px 0 var(--black); 
+  transform: translate(-6px, -6px);
+  z-index: 10; 
+}
 
 /* Image */
 .imageWrap {

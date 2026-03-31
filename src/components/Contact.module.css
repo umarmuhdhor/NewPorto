@@ -97,7 +97,11 @@
   transition: box-shadow 0.15s;
   width: 100%;
 }
-.input:focus, .textarea:focus { box-shadow: 4px 4px 0 var(--black); }
+.input:focus, .textarea:focus { 
+  box-shadow: 6px 6px 0 var(--accent-blue); 
+  transform: translate(-3px, -3px);
+  border-color: var(--accent-blue);
+}
 .input::placeholder, .textarea::placeholder { opacity: 0.35; }
 .textarea { resize: vertical; }
 

@@ -5,12 +5,12 @@
   z-index: 99999;
   border-radius: 50%;
   will-change: transform;
+  mix-blend-mode: difference;
 }
 
 .dot {
   width: 10px; height: 10px;
-  background: var(--black);
-  border: 2px solid var(--cream); /* Light border to contrast on dark backgrounds */
+  background: var(--white); /* White in difference mode looks dark on cream, inverted on darks */
   margin-left: -5px;
   margin-top: -5px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -18,24 +18,22 @@
 
 .ring {
   width: 44px; height: 44px;
-  border: 1.5px solid rgba(15, 15, 15, 0.4); /* Semi-transparent black */
+  border: 1.5px solid var(--white);
   margin-left: -22px;
   margin-top: -22px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(3px); /* Elegant glassmorphic effect */
+  background: transparent;
   transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
               height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
               margin 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              border-color 0.3s, background-color 0.3s;
+              border 0.3s, background-color 0.3s;
 }
 
 .ring.hover {
-  width: 64px; height: 64px;
-  margin-left: -32px;
-  margin-top: -32px;
-  background: rgba(0, 0, 0, 0.05);
-  border: 2px solid var(--black);
-  backdrop-filter: blur(0px); /* Remove blur on hover for clarity */
+  width: 80px; height: 80px;
+  margin-left: -40px;
+  margin-top: -40px;
+  background: var(--white);
+  border: 40px solid transparent; /* Triggers the solid difference fill while feeling soft */
 }
 
 @media (pointer: coarse) {

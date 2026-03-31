@@ -12,6 +12,8 @@ import GSAPAnimations from '@/components/GSAPAnimations';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import MarqueeDivider from '@/components/MarqueeDivider';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata() {
   const profile = await prisma.profile.findFirst();
   return {
