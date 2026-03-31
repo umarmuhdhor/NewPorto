@@ -1,17 +1,23 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 
-// Whitelist of allowed MIME types → safe file extensions
-const ALLOWED_TYPES = {
-  'image/jpeg': 'jpg',
-  'image/png':  'png',
-  'image/webp': 'webp',
-  'image/gif':  'gif',
-};
-const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Whitelist of allowed MIME types
+const ALLOWED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+];
+const MAX_SIZE_BYTES = 10 * 1024 * 1024; // Increased to 10 MB for Cloudinary
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -25,35 +31,41 @@ export async function POST(req) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // ── Validate MIME type against whitelist ──────────────────────────────────
-    const ext = ALLOWED_TYPES[file.type];
-    if (!ext) {
+    // ── Validate MIME type ────────────────────────────────────────────────────
+    if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
         { error: 'Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.' },
         { status: 400 }
       );
     }
 
+    // ── Enforce file size limit ───────────────────────────────────────────────
+    if (file.size > MAX_SIZE_BYTES) {
+      return NextResponse.json({ error: 'File exceeds 10 MB limit.' }, { status: 400 });
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // ── Enforce file size limit ───────────────────────────────────────────────
-    if (buffer.length > MAX_SIZE_BYTES) {
-      return NextResponse.json({ error: 'File exceeds 5 MB limit.' }, { status: 400 });
-    }
+    // ── Upload to Cloudinary using upload_stream ──────────────────────────────
+    const uploadResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'portfolio', // Optional: organized folder in Cloudinary
+          resource_type: 'auto',
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(buffer);
+    });
 
-    // ── Use only server-generated filename — never use user-supplied name ─────
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadDir, { recursive: true });
-
-    const filename = `upload_${Date.now()}.${ext}`;
-    const filepath = join(uploadDir, filename);
-
-    await writeFile(filepath, buffer);
-
-    return NextResponse.json({ url: `/uploads/${filename}` });
+    // Return the persistent Cloudinary secure URL
+    return NextResponse.json({ url: uploadResult.secure_url });
   } catch (err) {
     console.error('Upload error:', err);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Upload failed: ' + (err.message || 'Unknown error') }, { status: 500 });
   }
 }
