@@ -1,5 +1,5 @@
-'use client';
 import { useState, useEffect } from 'react';
+import UploadImage from '../../components/UploadImage';
 
 const EMPTY = { title: '', subtitle: '', description: '', backstory: '', flow: '', techStack: '', imageUrl: '', status: 'Completed', codeUrl: '', liveUrl: '', role: '', date: '' };
 
@@ -117,10 +117,12 @@ export default function AdminProjectsPage() {
                   <input className="admin-input" value={form.date} onChange={e => set('date', e.target.value)} placeholder="2024" />
                 </div>
               </div>
-              <div className="admin-field">
-                <label className="admin-label">Image URL</label>
-                <input className="admin-input" value={form.imageUrl} onChange={e => set('imageUrl', e.target.value)} placeholder="https://..." />
-              </div>
+              <UploadImage 
+                label="Project Image" 
+                value={form.imageUrl} 
+                onChange={v => set('imageUrl', v)} 
+                placeholder="Image URL or upload" 
+              />
               <div className="admin-grid-2">
                 <div className="admin-field">
                   <label className="admin-label">Code URL</label>

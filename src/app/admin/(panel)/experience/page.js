@@ -1,5 +1,5 @@
-'use client';
 import { useState, useEffect } from 'react';
+import UploadImage from '../../components/UploadImage';
 
 const EMPTY = { title: '', organization: '', description: '', startDate: '', endDate: 'Present', type: 'experience', images: '[]' };
 
@@ -121,24 +121,31 @@ export default function AdminExperiencePage() {
                 <textarea className="admin-textarea" rows={4} value={form.description} onChange={e => set('description', e.target.value)} />
               </div>
               <div className="admin-field">
-                <label className="admin-label">Images (Optional - For Carousel)</label>
+                <label className="admin-label">Images Gallery (Optional - For Carousel)</label>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
                   {JSON.parse(form.images || '[]').map((img, idx) => (
-                    <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', border: '1px solid var(--cream-dark)', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', border: '1px solid var(--black)', overflow: 'hidden' }}>
                       <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       <button 
                         onClick={() => removeImage(idx)} 
                         title="Remove image"
-                        style={{ position: 'absolute', top: '4px', right: '4px', background: 'var(--red, #ff4444)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ position: 'absolute', top: '2px', right: '2px', background: 'var(--accent-red, #ff4444)', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', cursor: 'pointer', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         ✕
                       </button>
                     </div>
                   ))}
-                  <div style={{ width: '80px', height: '80px', border: '2px dashed var(--cream-dark)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative', background: 'var(--cream)' }}>
-                    <span style={{ fontSize: '24px', color: 'var(--black)', opacity: 0.5 }}>+</span>
-                    <input type="file" onChange={uploadImage} accept="image/*" style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} disabled={saving} />
-                  </div>
                 </div>
+                <UploadImage 
+                  label="Add Image to Gallery"
+                  value=""
+                  onChange={(url) => {
+                    if (!url) return;
+                    const currentImages = JSON.parse(form.images || '[]');
+                    currentImages.push(url);
+                    set('images', JSON.stringify(currentImages));
+                  }}
+                  placeholder="Paste URL or upload to gallery"
+                />
               </div>
               <div className="admin-row">
                 <button className="admin-btn" onClick={save} disabled={saving}>{saving ? 'Saving...' : '💾 Save'}</button>

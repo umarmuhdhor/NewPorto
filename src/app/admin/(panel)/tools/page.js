@@ -1,5 +1,5 @@
-'use client';
 import { useState, useEffect } from 'react';
+import UploadImage from '../../components/UploadImage';
 
 const CATS = ['Language', 'Framework', 'Runtime', 'Database', 'Cloud', 'DevOps', 'ORM', 'Design', 'Tool', 'Other'];
 const EMPTY = { name: '', iconUrl: '', category: 'Language' };
@@ -69,10 +69,12 @@ export default function AdminToolsPage() {
                   </select>
                 </div>
               </div>
-              <div className="admin-field">
-                <label className="admin-label">Icon URL (optional)</label>
-                <input className="admin-input" value={form.iconUrl} onChange={e => set('iconUrl', e.target.value)} placeholder="https://..." />
-              </div>
+              <UploadImage 
+                label="Tool Icon (Emoji or URL)" 
+                value={form.iconUrl} 
+                onChange={v => set('iconUrl', v)} 
+                placeholder="Paste emoji or upload icon" 
+              />
               <div className="admin-row">
                 <button className="admin-btn" onClick={save} disabled={saving}>{saving ? 'Saving...' : '💾 Save'}</button>
                 <button className="admin-btn admin-btn-ghost" onClick={() => setModal(null)}>Cancel</button>

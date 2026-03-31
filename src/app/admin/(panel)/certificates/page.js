@@ -1,5 +1,5 @@
-'use client';
 import { useState, useEffect } from 'react';
+import UploadImage from '../../components/UploadImage';
 
 const EMPTY = { title: '', issuer: '', description: '', year: '', type: 'Certification', imageUrl: '' };
 
@@ -79,27 +79,12 @@ export default function AdminCertificatesPage() {
           <div className="admin-modal" onClick={e => e.stopPropagation()}>
             <p className="admin-modal-title">{modal === 'add' ? 'Add Certificate' : 'Edit Certificate'}</p>
             <div className="admin-form">
-              {/* Certificate Image */}
-              <div className="admin-field">
-                <label className="admin-label">Certificate Image / Photo</label>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  {form.imageUrl && (
-                    <img src={form.imageUrl} alt="Preview" style={{ height: 80, width: 120, objectFit: 'cover', border: '2px solid #000' }} />
-                  )}
-                  <label style={{ cursor: 'pointer' }}>
-                    <span className="admin-btn admin-btn-ghost" style={{ display: 'inline-block' }}>
-                      {uploading ? '⏳ Uploading...' : '📷 Upload Image'}
-                    </span>
-                    <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} disabled={uploading} />
-                  </label>
-                  {form.imageUrl && (
-                    <button className="admin-btn admin-btn-danger" style={{ padding: '8px 12px' }} onClick={() => set('imageUrl', '')}>✕ Remove</button>
-                  )}
-                </div>
-                <p style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '4px', fontFamily: 'monospace' }}>
-                  Upload your certificate scan / photo (JPG, PNG, PDF screenshot)
-                </p>
-              </div>
+              <UploadImage 
+                label="Certificate Image / Photo" 
+                value={form.imageUrl} 
+                onChange={v => set('imageUrl', v)} 
+                placeholder="Image URL or upload" 
+              />
 
               <div className="admin-grid-2">
                 <div className="admin-field">

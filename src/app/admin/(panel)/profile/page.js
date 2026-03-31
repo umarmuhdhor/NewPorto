@@ -1,5 +1,5 @@
-'use client';
 import { useState, useEffect, useRef } from 'react';
+import UploadImage from '../../components/UploadImage';
 
 export default function AdminProfilePage() {
   const [form, setForm] = useState({ name: '', title: '', bio: '', photoUrl: '', cvUrl: '' });
@@ -68,27 +68,12 @@ export default function AdminProfilePage() {
           </div>
 
           {/* Photo upload */}
-          <div className="admin-field">
-            <label className="admin-label">Profile Photo</label>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-              {form.photoUrl && (
-                <img src={form.photoUrl} alt="Current photo"
-                  style={{ width: 80, height: 80, objectFit: 'cover', border: '2px solid #333' }} />
-              )}
-              <div style={{ flex: 1 }}>
-                <input className="admin-input" value={form.photoUrl || ''} onChange={e => set('photoUrl', e.target.value)}
-                  placeholder="Paste a URL or upload below" style={{ marginBottom: '8px' }} />
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button type="button" className="admin-btn admin-btn-ghost"
-                    onClick={() => fileRef.current?.click()} disabled={uploading}>
-                    {uploading ? '⏳ Uploading...' : '📁 Upload Image'}
-                  </button>
-                  <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
-                    onChange={handleUpload} />
-                </div>
-              </div>
-            </div>
-          </div>
+          <UploadImage 
+            label="Profile Photo" 
+            value={form.photoUrl} 
+            onChange={v => set('photoUrl', v)} 
+            placeholder="Paste a URL or upload" 
+          />
 
           <div className="admin-field">
             <label className="admin-label">CV / Resume URL</label>
