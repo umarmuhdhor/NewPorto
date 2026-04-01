@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import UploadImage from '../../components/UploadImage';
 
 export default function AdminProfilePage() {
-  const [form, setForm] = useState({ name: '', title: '', bio: '', photoUrl: '', cvUrl: '' });
+  const [form, setForm] = useState({ name: '', title: '', bio: '', photoUrl: '', cvUrl: '', github: '', linkedin: '', email: '' });
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -65,6 +65,25 @@ export default function AdminProfilePage() {
             <textarea className="admin-textarea" rows={6} value={form.bio || ''}
               onChange={e => set('bio', e.target.value)}
               placeholder="Passionate developer specializing in **Web Development** and **Cloud Computing**..." />
+          </div>
+
+          <div className="admin-grid-2">
+            <div className="admin-field">
+              <label className="admin-label">LinkedIn URL</label>
+              <input className="admin-input" value={form.linkedin || ''} onChange={e => set('linkedin', e.target.value)}
+                placeholder="https://linkedin.com/in/..." />
+            </div>
+            <div className="admin-field">
+              <label className="admin-label">GitHub URL</label>
+              <input className="admin-input" value={form.github || ''} onChange={e => set('github', e.target.value)}
+                placeholder="https://github.com/..." />
+            </div>
+          </div>
+
+          <div className="admin-field">
+            <label className="admin-label">Email Address / mailto: link</label>
+            <input className="admin-input" value={form.email || ''} onChange={e => set('email', e.target.value)}
+              placeholder="mailto:you@example.com" />
           </div>
 
           {/* Photo upload */}

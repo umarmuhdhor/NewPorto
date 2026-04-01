@@ -15,12 +15,12 @@ model User {
 }
 
 model Profile {
-  id       String  @id @default(cuid())
-  name     String  @default("Your Name")
-  title    String  @default("Your Title")
-  bio      String  @default("Your bio goes here...")
-  photoUrl String  @default("")
-  cvUrl    String  @default("")
+  id       String @id @default(cuid())
+  name     String @default("Your Name")
+  title    String @default("Your Title")
+  bio      String @default("Your bio goes here...")
+  photoUrl String @default("")
+  cvUrl    String @default("")
 }
 
 model SocialLink {
