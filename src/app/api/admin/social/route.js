@@ -12,8 +12,7 @@ const requireAuth = async () => {
 const safeFields = (body) => ({
   platform: body.platform ?? '',
   url:      body.url      ?? '',
-  label:    body.label    ?? null,
-  icon:     body.icon     ?? null,
+  icon:     body.icon     ?? '',
 });
 
 export async function GET() {
