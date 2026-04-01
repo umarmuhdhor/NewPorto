@@ -64,6 +64,10 @@ export default function AdminSocialPage() {
                 <label className="admin-label">URL</label>
                 <input className="admin-input" value={form.url} onChange={e => set('url', e.target.value)} placeholder="https://..." />
               </div>
+              <div className="admin-field">
+                <label className="admin-label">Icon Name (lucide icon or platform name)</label>
+                <input className="admin-input" value={form.icon || ''} onChange={e => set('icon', e.target.value)} placeholder="github, linkedin, mail, etc." />
+              </div>
               <div className="admin-row">
                 <button className="admin-btn" onClick={save} disabled={saving}>{saving ? 'Saving...' : '💾 Save'}</button>
                 <button className="admin-btn admin-btn-ghost" onClick={() => setModal(null)}>Cancel</button>
