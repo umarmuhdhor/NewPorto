@@ -18,24 +18,52 @@
 
 .ring {
   width: 44px; height: 44px;
-  border: 1.5px solid var(--white);
+  border: 2px solid var(--white);
   margin-left: -22px;
   margin-top: -22px;
   background: transparent;
-  transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              margin 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              border 0.3s, background-color 0.3s;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              margin 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ring.hover {
-  width: 80px; height: 80px;
-  margin-left: -40px;
-  margin-top: -40px;
+  width: 90px; height: 90px;
+  margin-left: -45px;
+  margin-top: -45px;
   background: var(--white);
-  border: 40px solid transparent; /* Triggers the solid difference fill while feeling soft */
+  border-width: 0;
+}
+
+.ring.detail {
+  width: 100px; height: 100px;
+  margin-left: -50px;
+  margin-top: -50px;
+  background: var(--accent-yellow);
+  border-color: var(--black);
+  mix-blend-mode: normal; /* Yellow looks better in normal mode */
+}
+
+.cursorText {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ring.detail .cursorText {
+  opacity: 1;
 }
 
 @media (pointer: coarse) {
   .dot, .ring { display: none; }
 }
+

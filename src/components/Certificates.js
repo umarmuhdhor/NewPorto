@@ -1,10 +1,27 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
+import { gsap } from 'gsap';
 import styles from './Certificates.module.css';
 
 export default function Certificates({ certificates }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [lightbox, setLightbox] = useState(null);
+  
+  const lightboxRef = useRef(null);
+  const imgRef = useRef(null);
+
+  useLayoutEffect(() => {
+    if (lightbox && lightboxRef.current && imgRef.current) {
+      gsap.fromTo(lightboxRef.current, 
+        { opacity: 0 }, 
+        { opacity: 1, duration: 0.4, ease: 'power2.out' }
+      );
+      gsap.fromTo(imgRef.current,
+        { scale: 0.8, filter: 'blur(10px)', opacity: 0 },
+        { scale: 1, filter: 'blur(0px)', opacity: 1, duration: 0.6, ease: 'back.out(1.5)' }
+      );
+    }
+  }, [lightbox]);
 
   if (!certificates || certificates.length === 0) return null;
 
@@ -24,11 +41,15 @@ export default function Certificates({ certificates }) {
         </div>
 
         {/* Main card */}
-        <div className={styles.mainCard} key={cert.id}>
+        <div className={styles.mainCard} key={cert.id} data-animate="card">
           {/* Image side */}
           <div className={styles.imageCol}>
             {cert.imageUrl ? (
-              <div className={styles.imageWrap} onClick={() => setLightbox(cert.imageUrl)}>
+              <div 
+                className={styles.imageWrap} 
+                onClick={() => setLightbox(cert.imageUrl)}
+                data-cursor="ZOOM"
+              >
                 <img src={cert.imageUrl} alt={cert.title} className={styles.certImage} />
                 <div className={styles.imageOverlay}>
                   <span className={styles.zoomIcon}>🔍 VIEW FULL</span>
@@ -96,13 +117,14 @@ export default function Certificates({ certificates }) {
         )}
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox 2.0 */}
       {lightbox && (
-        <div className={styles.lightbox} onClick={() => setLightbox(null)}>
+        <div className={styles.lightbox} ref={lightboxRef} onClick={() => setLightbox(null)}>
           <button className={styles.lightboxClose} onClick={() => setLightbox(null)}>✕</button>
-          <img src={lightbox} alt="Certificate" className={styles.lightboxImg} />
+          <img src={lightbox} ref={imgRef} alt="Certificate" className={styles.lightboxImg} />
         </div>
       )}
     </section>
   );
 }
+

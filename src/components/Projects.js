@@ -1,5 +1,6 @@
 'use client';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import { gsap } from 'gsap';
 import styles from './Projects.module.css';
 
 function TiltCard({ children, className, ...props }) {
@@ -39,6 +40,8 @@ function TiltCard({ children, className, ...props }) {
 
 export default function Projects({ projects }) {
   const [selectedProject, setSelectedProject] = useState(null);
+  const modalRef = useRef(null);
+  const contentRef = useRef(null);
 
   // Close modal on esc key
   useEffect(() => {
@@ -56,6 +59,25 @@ export default function Projects({ projects }) {
     return () => { document.body.style.overflow = ''; };
   }, [selectedProject]);
 
+  // GSAP animation for modal
+  useLayoutEffect(() => {
+    if (selectedProject && modalRef.current && contentRef.current) {
+      gsap.fromTo(modalRef.current, 
+        { opacity: 0 }, 
+        { opacity: 1, duration: 0.3, ease: 'power2.out' }
+      );
+      gsap.fromTo(contentRef.current,
+        { scale: 0.9, y: 40, opacity: 0 },
+        { scale: 1, y: 0, opacity: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
+      );
+    }
+  }, [selectedProject]);
+
+  const parseFlow = (flow) => {
+    if (!flow) return [];
+    return flow.split(/\n|(?<=\.) /).filter(s => s.trim().length > 0);
+  };
+
   return (
     <section id="projects" className={`section ${styles.section}`}>
       <div className="container">
@@ -69,8 +91,12 @@ export default function Projects({ projects }) {
 
         <div className={styles.grid}>
           {projects?.map((project, i) => (
-            <TiltCard key={project.id} className={`${styles.card} ${styles[`card${i % 3}`]}`} data-animate="card">
-              {/* Image */}
+            <TiltCard 
+              key={project.id} 
+              className={`${styles.card} ${styles[`card${i % 3}`]}`} 
+              data-animate="card"
+              data-cursor="VIEW"
+            >
               <div className={styles.imageWrap}>
                 {project.imageUrl ? (
                   <img src={project.imageUrl} alt={project.title} className={styles.image} />
@@ -83,16 +109,16 @@ export default function Projects({ projects }) {
                   {project.status === 'Active' && <span className={styles.dot} />}
                   {project.status}
                 </span>
-                {/* Overlay on hover */}
                 <div 
                   className={styles.imageOverlay} 
                   onClick={() => setSelectedProject(project)}
+                  data-cursor="VIEW"
                 >
-                  <span className={styles.overlayText}>VIEW PROJECT</span>
+                  <span className={styles.overlayText}>VIEW CASE STUDY</span>
                 </div>
               </div>
 
-              {/* Body */}
+
               <div className={styles.body}>
                 <div className={styles.meta}>
                   {project.role && <span className={styles.role}>{project.role}</span>}
@@ -116,22 +142,8 @@ export default function Projects({ projects }) {
                   <button 
                     onClick={() => setSelectedProject(project)}
                     className={`btn-secondary ${styles.actionBtn} ${styles.btnDetail}`}>
-                    VIEW DETAILS
+                    READ CASE STUDY &rarr;
                   </button>
-                  <div className={styles.actionsRow}>
-                    {project.codeUrl && (
-                      <a href={project.codeUrl} target="_blank" rel="noopener noreferrer"
-                        className={`btn-secondary ${styles.actionBtn}`}>
-                        CODE
-                      </a>
-                    )}
-                    {project.liveUrl && (
-                      <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-                        className={`btn-primary ${styles.actionBtn}`} style={{ background: 'var(--accent-green)', color: 'var(--black)' }}>
-                        LIVE ↗
-                      </a>
-                    )}
-                  </div>
                 </div>
               </div>
             </TiltCard>
@@ -144,55 +156,79 @@ export default function Projects({ projects }) {
           </div>
         )}
 
-        {/* Modal Overlay */}
+        {/* Modal Overlay 2.0 */}
         {selectedProject && (
-          <div className={styles.modalOverlay} onClick={() => setSelectedProject(null)}>
-            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+          <div className={styles.modalOverlay} ref={modalRef} onClick={() => setSelectedProject(null)}>
+            <div className={styles.modalContent} ref={contentRef} onClick={e => e.stopPropagation()}>
               <button className={styles.modalClose} onClick={() => setSelectedProject(null)}>✕</button>
               
-              <div className={styles.modalHeader}>
-                <h3 className={styles.modalTitle}>{selectedProject.title}</h3>
-                <div className={styles.meta} style={{ marginBottom: 0 }}>
-                  <span className={styles.role}>{selectedProject.role}</span>
-                  <span className={styles.date}>{selectedProject.date}</span>
+              {/* Left Panel: Hero */}
+              <div className={styles.modalHeroPanel}>
+                {selectedProject.imageUrl ? (
+                  <img src={selectedProject.imageUrl} alt={selectedProject.title} className={styles.modalHeroImage} />
+                ) : (
+                  <div className={styles.imagePlaceholder} style={{ background: 'var(--black)', height: '100%' }}>
+                    <span>⚡</span>
+                  </div>
+                )}
+                <div className={styles.modalHeroBottom}>
+                  <div className={styles.modalMetaRow}>
+                    <div className={styles.modalMetaItem}>
+                      <span className={styles.metaLabel}>Role</span>
+                      <span className={styles.metaValue}>{selectedProject.role || 'Developer'}</span>
+                    </div>
+                    <div className={styles.modalMetaItem}>
+                      <span className={styles.metaLabel}>Date</span>
+                      <span className={styles.metaValue}>{selectedProject.date || 'Present'}</span>
+                    </div>
+                  </div>
+                  <div className={styles.techStack} style={{ marginBottom: 0 }}>
+                    {selectedProject.techStack?.split(',').map((tech, idx) => (
+                      <span key={idx} className={styles.techBadge} style={{ background: 'var(--white)' }}>
+                        {tech.trim()}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {selectedProject.imageUrl && (
-                <div className={styles.modalImageWrap}>
-                  <img src={selectedProject.imageUrl} alt={selectedProject.title} className={styles.modalImage} />
-                </div>
-              )}
-
-              <div className={styles.modalBody}>
-                <div className={styles.modalSection}>
-                  <span className={styles.modalSectionTitle}>Overview</span>
-                  <p className={styles.modalText}>{selectedProject.description}</p>
+              {/* Right Panel: Content */}
+              <div className={styles.modalInfoPanel}>
+                <div className={styles.modalHeaderInfo}>
+                  <h3 className={styles.modalTitle}>{selectedProject.title}</h3>
+                  <p className={styles.modalOverview}>{selectedProject.description}</p>
                 </div>
 
                 {selectedProject.backstory && (
                   <div className={styles.modalSection}>
-                    <span className={styles.modalSectionTitle}>Backstory</span>
+                    <span className={styles.modalSectionTag}>Backstory</span>
                     <p className={styles.modalText}>{selectedProject.backstory}</p>
                   </div>
                 )}
 
                 {selectedProject.flow && (
                   <div className={styles.modalSection}>
-                    <span className={styles.modalSectionTitle}>Alur / Flow</span>
-                    <p className={styles.modalText}>{selectedProject.flow}</p>
+                    <span className={styles.modalSectionTag}>Project Journey / Flow</span>
+                    <div className={styles.flowContainer}>
+                      {parseFlow(selectedProject.flow).map((step, idx) => (
+                        <div key={idx} className={styles.flowStep}>
+                          <span className={styles.stepNum}>{String(idx + 1).padStart(2, '0')}</span>
+                          <p className={styles.stepText}>{step.trim()}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
                 <div className={styles.modalActions}>
                   {selectedProject.codeUrl && (
-                    <a href={selectedProject.codeUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary">
-                      CODE
+                    <a href={selectedProject.codeUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ flex: 1, textAlign: 'center' }}>
+                      SOURCE CODE &lt;/&gt;
                     </a>
                   )}
                   {selectedProject.liveUrl && (
-                    <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">
-                      LIVE ↗
+                    <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ flex: 1, textAlign: 'center' }}>
+                      LAUNCH APP ↗
                     </a>
                   )}
                 </div>
@@ -204,3 +240,4 @@ export default function Projects({ projects }) {
     </section>
   );
 }
+

@@ -10,16 +10,16 @@ export default function GSAPAnimations() {
       gsap.registerPlugin(ScrollTrigger);
 
       ctx = gsap.context(() => {
-        // ─── Hero Entrance & Parallax ───
+        // ─── Hero Entrance & Premium Parallax ───
         const heroInner = document.querySelector('[data-animate="hero-inner"]');
         if (heroInner) {
           const entranceAnim = gsap.fromTo(heroInner,
-            { opacity: 0, y: 80, scale: 0.95 },
-            { opacity: 1, y: 0, scale: 1, duration: 1.5, ease: 'expo.out', delay: 0.6 }
+            { opacity: 0, y: 100, scale: 0.9, filter: 'blur(10px)' },
+            { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 1.8, ease: 'expo.out', delay: 0.8 }
           );
           entranceAnim.eventCallback('onComplete', () => {
             gsap.to(heroInner, {
-              y: 250, opacity: 0, ease: 'none',
+              y: 350, opacity: 0, filter: 'blur(15px)', ease: 'none',
               scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: true }
             });
           });
@@ -28,96 +28,98 @@ export default function GSAPAnimations() {
         // ─── Hero Marquee Scroll Scrubbing ───
         gsap.utils.toArray('[class*="Hero_marqueeRow"]').forEach((row, i) => {
           gsap.to(row, {
-            x: i % 2 === 0 ? '-15vw' : '15vw', ease: 'none',
-            scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: 1 }
+            x: i % 2 === 0 ? '-20vw' : '20vw', ease: 'none',
+            scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: 1.5 }
           });
         });
 
-        // ─── Section headings — Dramatic wipe from bottom ───
+        // ─── Section Headings — Cinematic Wipe & Stagger ───
         gsap.utils.toArray('.section-heading').forEach((el) => {
           gsap.fromTo(el,
-            { clipPath: 'inset(100% 0 0 0)', y: 60, opacity: 0 },
-            { clipPath: 'inset(0% 0 0 0)', y: 0, opacity: 1, duration: 1.2, ease: 'expo.out',
-              scrollTrigger: { trigger: el, start: 'top 85%' } }
-          );
-        });
-
-        // ─── Section subheadings ───
-        gsap.utils.toArray('.section-subheading').forEach((el) => {
-          gsap.fromTo(el,
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
-              scrollTrigger: { trigger: el, start: 'top 88%' } }
-          );
-        });
-
-        // ─── Project cards — Elastic brutalist pop ───
-        gsap.utils.toArray('[data-animate="card"]').forEach((el, i) => {
-          gsap.fromTo(el,
-            { y: 120, opacity: 0, rotation: i % 2 === 0 ? -8 : 8, scale: 0.8 },
-            {
-              y: 0, opacity: 1, rotation: i % 2 === 0 ? 1.5 : -1, scale: 1,
-              duration: 1.2, delay: i * 0.1, ease: 'elastic.out(1, 0.6)',
-              scrollTrigger: { trigger: el, start: 'top 85%' },
-              onComplete: () => gsap.set(el, { clearProps: 'transform' })
+            { clipPath: 'inset(100% 0 0 0)', y: 100, filter: 'blur(12px)', opacity: 0 },
+            { 
+              clipPath: 'inset(0% 0 0 0)', y: 0, filter: 'blur(0px)', opacity: 1, 
+              duration: 1.6, ease: 'expo.out',
+              scrollTrigger: { trigger: el, start: 'top 88%' } 
             }
           );
         });
 
-        // ─── Tool cards — Staggered scale pop ───
-        gsap.utils.toArray('[data-animate="tool"]').forEach((el, i) => {
+        // ─── Section Subheadings — Smooth Glide ───
+        gsap.utils.toArray('.section-subheading').forEach((el) => {
           gsap.fromTo(el,
-            { scale: 0.5, opacity: 0, rotation: -10 },
-            { scale: 1, opacity: 1, rotation: 0, duration: 0.7, delay: i * 0.02, ease: 'back.out(2.5)',
-              scrollTrigger: { trigger: el, start: 'top 95%' } }
+            { y: 40, opacity: 0, letterSpacing: '0.4em' },
+            { 
+              y: 0, opacity: 1, letterSpacing: '0.18em', 
+              duration: 1.2, ease: 'power4.out',
+              scrollTrigger: { trigger: el, start: 'top 92%' } 
+            }
           );
         });
 
-        // ─── About photo ───
-        const photoFrame = document.querySelector('[data-animate="photo"]');
-        if (photoFrame) {
-          gsap.fromTo(photoFrame,
-            { x: -100, opacity: 0, rotation: -12, scale: 0.8 },
-            { x: 0, opacity: 1, rotation: -3, scale: 1, duration: 1.2, ease: 'elastic.out(1, 0.75)',
-              scrollTrigger: { trigger: photoFrame, start: 'top 85%' } }
+        // ─── Project Cards — Smooth Elastic Pop ───
+        gsap.utils.toArray('[data-animate="card"]').forEach((el, i) => {
+          gsap.fromTo(el,
+            { y: 150, opacity: 0, rotation: i % 2 === 0 ? -10 : 10, scale: 0.75 },
+            {
+              y: 0, opacity: 1, rotation: 0, scale: 1,
+              duration: 1.4, delay: i * 0.15, ease: 'elastic.out(1, 0.75)',
+              scrollTrigger: { trigger: el, start: 'top 90%' },
+              onComplete: () => {
+                // Keep the neobrutalist rotation active but gentle
+                gsap.set(el, { rotation: i % 2 === 0 ? 1.5 : -1 });
+              }
+            }
           );
-        }
+        });
 
-        // ─── About bio lines ───
+        // ─── Experience Tabs / About Lines — Staggered Reveal ───
         gsap.utils.toArray('[data-animate="tab"]').forEach((el, i) => {
           gsap.fromTo(el,
-            { x: -40, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.8, delay: i * 0.08, ease: 'power3.out',
-              scrollTrigger: { trigger: el, start: 'top 90%' } }
+            { x: -60, opacity: 0, filter: 'blur(4px)' },
+            { 
+              x: 0, opacity: 1, filter: 'blur(0px)', 
+              duration: 1, delay: i * 0.12, ease: 'power3.out',
+              scrollTrigger: { trigger: el, start: 'top 92%' } 
+            }
           );
         });
 
-        // ─── Stat cards ───
+        // ─── Stat Cards — Bounce Entrance ───
         gsap.utils.toArray('[data-animate="stat-card"]').forEach((el, i) => {
           const targetRot = parseFloat(el.dataset.rotation || 0);
           gsap.fromTo(el,
-            { y: 80, opacity: 0, rotation: targetRot * 3, scale: 0.8 },
-            { y: 0, opacity: 1, rotation: targetRot, scale: 1, duration: 1, delay: i * 0.1, ease: 'back.out(2)',
-              scrollTrigger: { trigger: el, start: 'top 90%' } }
+            { y: 100, opacity: 0, rotation: targetRot * 4, scale: 0.6 },
+            { 
+              y: 0, opacity: 1, rotation: targetRot, scale: 1, 
+              duration: 1.3, delay: i * 0.15, ease: 'back.out(2)',
+              scrollTrigger: { trigger: el, start: 'top 95%' } 
+            }
           );
         });
 
-        // ─── Footer big text ───
+        // ─── Footer Big Text — Dramatic Scale Reveal ───
         const footerText = document.querySelector('[data-animate="footer-text"]');
         if (footerText) {
           gsap.fromTo(footerText,
-            { y: 150, opacity: 0, scale: 0.9, clipPath: 'inset(100% 0 0 0)' },
-            { y: 0, opacity: 1, scale: 1, clipPath: 'inset(0% 0 0 0)', duration: 1.5, ease: 'expo.out',
-              scrollTrigger: { trigger: footerText, start: 'top 95%' } }
+            { y: clamp(200, 30, 'vh'), opacity: 0, scale: 0.8, filter: 'blur(20px)' },
+            { 
+              y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', 
+              duration: 2, ease: 'expo.out',
+              scrollTrigger: { trigger: footerText, start: 'top 98%' } 
+            }
           );
         }
 
-        // ─── Generic fade-up ───
+        // ─── Generic Fade-up for misc elements ───
         gsap.utils.toArray('[data-animate="fade"]').forEach((el, i) => {
           gsap.fromTo(el,
-            { y: 50, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, delay: i * 0.05, ease: 'power3.out',
-              scrollTrigger: { trigger: el, start: 'top 90%' } }
+            { y: 60, opacity: 0, filter: 'blur(5px)' },
+            { 
+              y: 0, opacity: 1, filter: 'blur(0px)', 
+              duration: 1.2, delay: i * 0.1, ease: 'power4.out',
+              scrollTrigger: { trigger: el, start: 'top 95%' } 
+            }
           );
         });
 
@@ -125,11 +127,13 @@ export default function GSAPAnimations() {
       });
     };
 
+    const clamp = (val, min, unit) => `clamp(${min}${unit}, ${val}px, ${val}px)`;
+
     initGSAP();
 
-    // Revert all GSAP animations and kill all ScrollTriggers on unmount
     return () => ctx?.revert();
   }, []);
 
   return null;
 }
+

@@ -195,25 +195,34 @@
 /* ─── Lightbox ─── */
 .lightbox {
   position: fixed; inset: 0; z-index: 9000;
-  background: rgba(0,0,0,0.92);
+  background: rgba(0,0,0,0.95);
+  backdrop-filter: blur(10px);
   display: flex; align-items: center; justify-content: center;
   padding: 40px;
-  animation: fadeIn 0.2s ease;
+  cursor: zoom-out;
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 .lightboxClose {
-  position: absolute; top: 20px; right: 24px;
+  position: absolute; top: 30px; right: 30px;
   font-size: 1.5rem; color: var(--white);
-  background: transparent; border: 2px solid rgba(255,255,255,0.3);
-  width: 44px; height: 44px; border-radius: 50%;
-  transition: background 0.2s;
+  background: #ff4d4d; border: 3px solid var(--black);
+  width: 50px; height: 50px;
+  font-weight: 900;
+  box-shadow: 4px 4px 0 var(--black);
+  transition: transform 0.2s;
+  z-index: 10001;
+  cursor: pointer;
 }
-.lightboxClose:hover { background: rgba(255,255,255,0.15); }
+
+.lightboxClose:hover { transform: scale(1.1) rotate(90deg); }
+
 .lightboxImg {
   max-width: 90vw; max-height: 85vh;
   object-fit: contain;
-  border: 3px solid var(--white);
+  border: 6px solid var(--white);
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
 }
+
 
 @media (max-width: 768px) {
   .mainCard { grid-template-columns: 1fr; }
