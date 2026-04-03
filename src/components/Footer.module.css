@@ -13,8 +13,7 @@
   align-items: start;
 }
 
-/* Left */
-.left {}
+/* Left column — inherits grid layout */
 
 .label {
   font-family: var(--font-mono);
@@ -25,58 +24,70 @@
 }
 
 .bigText {
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  font-weight: 700;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin-bottom: 40px;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 48px;
 }
 
 .socialLink {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  padding: 16px 0;
-  transition: border-color 0.2s, opacity 0.2s;
-  opacity: 0.7;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  padding: 18px 0;
+  transition: border-color 0.25s, opacity 0.25s, padding-left 0.25s;
+  opacity: 0.6;
 }
-.socialLink:hover { border-color: var(--white); opacity: 1; }
+.socialLink:hover { border-color: var(--accent-yellow); opacity: 1; padding-left: 8px; }
 
 .socialPlatform {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.socialArrow { font-size: 1.2rem; }
+.socialArrow { font-size: 1.4rem; transition: transform 0.2s; }
+.socialLink:hover .socialArrow { transform: translate(4px, -4px); }
 
 /* Right */
 .bioCard {
-  border: 2px solid rgba(255,255,255,0.15);
-  padding: 28px;
-  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 32px;
+  background: rgba(255,255,255,0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gold top accent line */
+.bioCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-yellow) 0%, transparent 100%);
 }
 
 .bioLabel {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  opacity: 0.5;
+  opacity: 0.45;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   margin-bottom: 12px;
 }
 
 .bioText {
-  font-size: 0.92rem;
-  line-height: 1.7;
-  opacity: 0.75;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  opacity: 0.7;
   margin-bottom: 28px;
 }
 
-.stack { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+.stack { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
 .stackLabel {
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -90,10 +101,13 @@
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 5px 12px;
-  border: 1px solid rgba(255,255,255,0.25);
-  opacity: 0.7;
+  padding: 5px 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+  opacity: 0.65;
+  transition: opacity 0.2s, border-color 0.2s;
+  border-radius: 100px;
 }
+.stackBadge:hover { opacity: 1; border-color: var(--accent-yellow); }
 
 /* Bottom bar */
 .bottom {

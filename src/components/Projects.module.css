@@ -36,20 +36,16 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.25s ease, transform 0.12s linear, z-index 0s;
+  transition: box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.16,1,0.3,1);
   box-shadow: 6px 6px 0 var(--black);
   will-change: transform;
   transform-style: preserve-3d;
-  transform: rotate(0deg); 
 }
-/* Alternate rotations for scattered brutalist look */
-.card:nth-child(even) { transform: rotate(1.5deg); }
-.card:nth-child(odd) { transform: rotate(-1deg); }
-/* Stronger physical lift on hover */
-.card:hover { 
-  box-shadow: 14px 14px 0 var(--black); 
-  transform: translate(-6px, -6px);
-  z-index: 10; 
+/* Premium lift on hover */
+.card:hover {
+  box-shadow: 16px 16px 0 var(--black);
+  transform: translate(-8px, -8px);
+  z-index: 10;
 }
 
 /* Image */
@@ -66,7 +62,8 @@
 .imagePlaceholder {
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 3rem; opacity: 0.3;
+  font-size: 3.5rem;
+  background: linear-gradient(135deg, var(--cream-dark) 0%, var(--cream) 100%);
   transition: transform 0.4s ease;
 }
 .card:hover .imagePlaceholder { transform: scale(1.1); }
@@ -179,13 +176,20 @@
 }
 .techBadge {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border: 2px solid var(--black);
-  background: var(--cream);
+  background: var(--black);
+  color: var(--white);
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+  transition: background 0.15s, color 0.15s;
+}
+.techBadge:hover {
+  background: var(--accent-yellow);
   color: var(--black);
-  box-shadow: 2px 2px 0 var(--black);
+  border-color: var(--black);
 }
 
 .empty {

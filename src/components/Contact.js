@@ -1,10 +1,95 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
 import styles from './Contact.module.css';
+
+function MagneticCTA({ profile }) {
+  const ctaRef = useRef(null);
+  const [isCopied, setIsCopied] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!ctaRef.current) return;
+      const { left, top, width, height } = ctaRef.current.getBoundingClientRect();
+      const x = e.clientX - (left + width / 2);
+      const y = e.clientY - (top + height / 2);
+      
+      // Magnetic pull
+      gsap.to(ctaRef.current, {
+        x: x * 0.35,
+        y: y * 0.35,
+        duration: 0.6,
+        ease: 'power2.out'
+      });
+
+      if (isCopied) {
+        setMousePos({ x: e.clientX, y: e.clientY });
+      }
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(ctaRef.current, {
+        x: 0, y: 0,
+        duration: 1,
+        ease: 'elastic.out(1, 0.3)'
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    ctaRef.current?.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [isCopied]);
+
+  const copyToClipboard = () => {
+    if (!profile?.email) return;
+    navigator.clipboard.writeText(profile.email);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  return (
+    <div className={styles.infoCol}>
+      <div 
+        ref={ctaRef}
+        className={styles.massiveCta}
+        onClick={copyToClipboard}
+      >
+        <div className={styles.magneticWrap}>
+          <span className={styles.ctaText}>Let's</span>
+          <span className={`${styles.ctaText} ${styles.ctaOutline}`}>Talk</span>
+        </div>
+        <span className={styles.emailSub}>{profile?.email || 'hello@yourdomain.com'}</span>
+      </div>
+
+      {isCopied && (
+        <div 
+          className={styles.copyBadge}
+          style={{ 
+            left: mousePos.x + 15, 
+            top: mousePos.y + 15 
+          }}
+        >
+          Copied to clipboard! 📋
+        </div>
+      )}
+
+      <div className={styles.infoItems}>
+        <div className={styles.infoItem}>
+          <span>📍 INDONESIA</span>
+          <span style={{ opacity: 0.3 }}>—</span>
+          <span>AVAILABLE FOR HIRE</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Contact({ profile }) {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
-  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [status, setStatus] = useState('idle');
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async (e) => {
@@ -28,83 +113,49 @@ export default function Contact({ profile }) {
   };
 
   return (
-    <section id="contact" className={`section ${styles.section}`}>
+    <section id="contact" className={styles.section}>
       <div className="container">
-        <p className="section-subheading">// SAY HELLO</p>
-        <h2 className="section-heading">Get In Touch</h2>
-        <p className={styles.intro}>
-          Have a project in mind, a question, or just want to connect? I'd love to hear from you.
-        </p>
-
         <div className={styles.grid}>
-          {/* Contact Info */}
-          <div className={styles.infoCol}>
-            <div className={styles.infoCard}>
-              <p className={styles.infoLabel}>// LET'S TALK</p>
-              <p className={styles.infoBig}>Open to opportunities, collaborations, and interesting conversations.</p>
-              <div className={styles.infoItems}>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoIcon}>📍</span>
-                  <div>
-                    <p className={styles.infoItemLabel}>Location</p>
-                    <p className={styles.infoItemValue}>Indonesia</p>
-                  </div>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoIcon}>⏰</span>
-                  <div>
-                    <p className={styles.infoItemLabel}>Response Time</p>
-                    <p className={styles.infoItemValue}>Within 24 hours</p>
-                  </div>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoIcon}>🤝</span>
-                  <div>
-                    <p className={styles.infoItemLabel}>Status</p>
-                    <p className={styles.infoItemValue}>Available for hire</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Interaction Side */}
+          <MagneticCTA profile={profile} />
 
-          {/* Form */}
+          {/* Form Side */}
           <div className={styles.formCol}>
             {status === 'success' ? (
               <div className={styles.successCard}>
-                <span className={styles.successIcon}>✓</span>
+                <div className={styles.successIcon}>✓</div>
                 <h3>Message Sent!</h3>
-                <p>Thanks for reaching out. I'll get back to you soon.</p>
+                <p>I'll get back to you faster than a git push. Thanks!</p>
                 <button className="btn-secondary" onClick={() => setStatus('idle')}>Send Another</button>
               </div>
             ) : (
               <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label className={styles.label}>Name *</label>
+                  <div>
+                    <label className={styles.label}>Name</label>
                     <input className={styles.input} value={form.name} onChange={e => set('name', e.target.value)}
-                      placeholder="Your name" required />
+                      placeholder="Umar Muhdhor" required />
                   </div>
-                  <div className={styles.formField}>
-                    <label className={styles.label}>Email *</label>
+                  <div>
+                    <label className={styles.label}>Email</label>
                     <input type="email" className={styles.input} value={form.email} onChange={e => set('email', e.target.value)}
-                      placeholder="your@email.com" required />
+                      placeholder="umar@example.com" required />
                   </div>
                 </div>
-                <div className={styles.formField}>
-                  <label className={styles.label}>Subject *</label>
+                <div>
+                  <label className={styles.label}>Subject</label>
                   <input className={styles.input} value={form.subject} onChange={e => set('subject', e.target.value)}
-                    placeholder="What's this about?" required />
+                    placeholder="Project Inquiry" required />
                 </div>
-                <div className={styles.formField}>
-                  <label className={styles.label}>Message *</label>
-                  <textarea className={styles.textarea} rows={5} value={form.message}
-                    onChange={e => set('message', e.target.value)} placeholder="Tell me more..." required />
+                <div>
+                  <label className={styles.label}>Message</label>
+                  <textarea className={styles.textarea} rows={4} value={form.message}
+                    onChange={e => set('message', e.target.value)} placeholder="Let's build something great..." required />
                 </div>
                 {status === 'error' && (
-                  <p className={styles.errorMsg}>Something went wrong. Please try again or email directly.</p>
+                  <p className={styles.errorMsg}>Something went wrong. High ping? Try again!</p>
                 )}
-                <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={status === 'sending'}>
+                <button type="submit" className={styles.submitBtn} disabled={status === 'sending'}>
                   {status === 'sending' ? 'Sending...' : 'Send Message →'}
                 </button>
               </form>
@@ -115,3 +166,4 @@ export default function Contact({ profile }) {
     </section>
   );
 }
+

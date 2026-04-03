@@ -1,9 +1,21 @@
-.aboutSection { 
-  background: var(--cream); 
-  padding: 100px 0;
+.aboutSection {
+  background: var(--cream);
+  padding: 120px 0;
   position: relative;
   overflow: hidden;
 }
+
+/* Subtle dot-grid texture on the cream background */
+.aboutSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 0);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+.aboutSection > * { position: relative; z-index: 1; }
 
 .grid {
   display: grid;
@@ -12,50 +24,84 @@
   align-items: center;
 }
 
-/* ─── Photo Parallax ─── */
-.photoCol { 
-  display: flex; 
-  justify-content: center; 
-  perspective: 1000px;
+/* ─── Photo ─── */
+.photoCol {
+  display: flex;
+  justify-content: center;
+  perspective: 1200px;
 }
 
 .photoFrame {
   position: relative;
-  width: 300px;
-  height: 380px;
+  width: 320px;
+  height: 400px;
   transform-style: preserve-3d;
   will-change: transform;
+  cursor: pointer;
 }
 
 .photoInner {
   width: 100%;
   height: 100%;
-  border: 4px solid var(--black);
+  border: 5px solid var(--black);
   overflow: hidden;
   background: var(--cream-dark);
   position: relative;
   z-index: 2;
-  box-shadow: 15px 15px 0 var(--black);
+  box-shadow: 16px 16px 0 var(--black), 16px 16px 0 2px var(--accent-yellow);
 }
 
-.photo { 
-  width: 120%; 
-  height: 120%; 
-  object-fit: cover; 
+/* Glass glint overlay */
+.photoInner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.15) 55%,
+    transparent 65%
+  );
+  background-size: 200% 200%;
+  background-position: var(--glint-x, 150%) var(--glint-y, 50%);
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: overlay;
+  transition: background-position 0.1s ease-out;
+}
+
+.photo {
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
   position: absolute;
   top: -10%;
   left: -10%;
-  transition: transform 0.1s linear;
+  will-change: transform;
 }
 
 .photoShadow {
   position: absolute;
   inset: 0;
-  top: 20px;
-  left: 20px;
-  border: 4px solid var(--black);
+  top: 28px;
+  left: 28px;
+  border: 5px solid rgba(0, 0, 0, 0.08);
   z-index: 1;
   pointer-events: none;
+}
+
+.photoPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0.4;
+  font-size: 3rem;
 }
 
 /* ─── Content ─── */
@@ -65,20 +111,23 @@
 
 .label {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
   color: var(--black);
-  opacity: 0.4;
+  opacity: 0.35;
   margin-bottom: 20px;
 }
 
 .name {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-size: clamp(3rem, 6vw, 5.5rem);
   font-weight: 950;
   text-transform: uppercase;
-  letter-spacing: -0.04em;
-  margin-bottom: 8px;
-  line-height: 0.9;
+  letter-spacing: -0.05em;
+  margin-bottom: 10px;
+  line-height: 0.85;
+  color: var(--black);
 }
 
 .titleLine {
@@ -91,33 +140,51 @@
 }
 
 .divider {
-  width: 60px;
-  height: 6px;
-  background: var(--black);
-  margin-bottom: 32px;
+  width: 80px;
+  height: 5px;
+  background: linear-gradient(90deg, var(--black) 60%, var(--accent-yellow) 100%);
+  margin-bottom: 36px;
+  border-radius: 2px;
 }
 
+/* ─── Bio ─── */
 .bio {
-  font-size: 1.2rem;
-  line-height: 1.8;
+  font-size: 1.1rem;
+  line-height: 1.9;
   color: var(--black);
   margin-bottom: 48px;
 }
 
-/* For GSAP splitting */
+/* Wipe-in animation per paragraph */
 .bioLine {
   display: block;
-  opacity: 0;
-  transform: translateY(20px);
-  will-change: transform, opacity;
+  margin-bottom: 1.2rem;
+  clip-path: inset(0 0 110% 0);
+  will-change: clip-path, transform;
 }
 
-.bio strong {
-  font-weight: 800;
+/* Animated highlighter */
+.marker {
+  position: relative;
+  display: inline;
+  font-weight: 900;
+  padding: 0 3px;
+  z-index: 1;
+}
+
+.marker::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 55%;
+  width: var(--marker-width, 0%);
   background: var(--accent-yellow);
-  padding: 2px 6px;
+  z-index: -1;
+  border-radius: 2px;
 }
 
+/* ─── Actions & Socials ─── */
 .actions {
   display: flex;
   gap: 20px;
@@ -133,25 +200,37 @@
 
 .socialBtn {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 900;
   text-transform: uppercase;
-  padding: 10px 18px;
-  border: 2px solid var(--black);
+  padding: 10px 20px;
+  border: 3px solid var(--black);
   background: var(--white);
-  box-shadow: 4px 4px 0 var(--black);
-  transition: all 0.2s;
+  box-shadow: 5px 5px 0 var(--black);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: var(--black);
+  text-decoration: none;
+  display: inline-block;
+  letter-spacing: 0.06em;
 }
 
 .socialBtn:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--black);
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 var(--black);
   background: var(--accent-yellow);
 }
 
-@media (max-width: 900px) {
-  .grid { grid-template-columns: 1fr; gap: 64px; }
+/* ─── Responsive ─── */
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
   .photoCol { order: -1; }
-  .photoFrame { width: 260px; height: 320px; }
+  .photoFrame { width: 280px; height: 350px; }
 }
 
+@media (max-width: 480px) {
+  .photoFrame { width: 240px; height: 300px; }
+  .name { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+}

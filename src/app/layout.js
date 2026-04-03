@@ -17,8 +17,35 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata = {
-  title: 'Portfolio',
-  description: 'Personal Portfolio Website',
+  title: 'Umar Muhdhor — Mobile & Fullstack Developer',
+  description: 'Portfolio of Umar Muhdhor — Junior iOS Developer at Apple Developer Academy @ BINUS. Building mobile apps with Flutter, Swift, and fullstack systems with Node.js, Next.js & Prisma.',
+  keywords: ['Umar Muhdhor', 'mobile developer', 'iOS developer', 'Flutter', 'Next.js', 'fullstack', 'portfolio'],
+  authors: [{ name: 'Umar Muhdhor' }],
+  creator: 'Umar Muhdhor',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://umarmuhdhor.com',
+    siteName: 'Umar Muhdhor Portfolio',
+    title: 'Umar Muhdhor — Mobile & Fullstack Developer',
+    description: 'Building real products — from DPR RI government apps to iOS academy projects. Available for work.',
+    images: [{
+      url: '/og-image.png',
+      width: 1200,
+      height: 630,
+      alt: 'Umar Muhdhor Portfolio',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Umar Muhdhor — Mobile & Fullstack Developer',
+    description: 'Building real products — from DPR RI government apps to iOS academy projects. Available for work.',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {

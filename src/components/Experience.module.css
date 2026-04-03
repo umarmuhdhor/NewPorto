@@ -44,14 +44,13 @@
   justify-content: flex-start;
 }
 
-/* Central Node */
 .node {
   position: absolute;
   top: 30px;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   background: var(--white);
   border: 4px solid var(--black);
   border-radius: 50%;
@@ -61,8 +60,8 @@
 
 .nodeActive {
   background: var(--accent-yellow);
-  transform: translate(-50%, -50%) scale(1.2);
-  box-shadow: 0 0 20px rgba(0,0,0,0.15);
+  transform: translate(-50%, -50%) scale(1.3);
+  box-shadow: 0 0 0 6px rgba(255, 230, 0, 0.2), 0 0 20px rgba(255,230,0,0.3);
 }
 
 .item {
@@ -70,15 +69,16 @@
   position: relative;
   background: var(--white);
   border: 3px solid var(--black);
+  border-left: 6px solid var(--accent-yellow);
   padding: 32px;
   box-shadow: 10px 10px 0 var(--black);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
   z-index: 2;
 }
 
 .item:hover {
-  transform: translate(-4px, -4px);
-  box-shadow: 14px 14px 0 var(--black);
+  transform: translate(-6px, -6px);
+  box-shadow: 16px 16px 0 var(--black);
 }
 
 .itemConnector {
@@ -86,7 +86,7 @@
   top: 30px;
   width: 6%;
   height: 4px;
-  background: var(--black);
+  background: linear-gradient(90deg, var(--accent-yellow), var(--black));
   z-index: 1;
 }
 

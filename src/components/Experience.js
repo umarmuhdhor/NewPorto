@@ -3,11 +3,22 @@ import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import styles from './Experience.module.css';
 
+function formatDate(dateStr) {
+  if (!dateStr) return 'Present';
+  // Handle both 'YYYY-MM-DD' and 'YYYY' formats consistently
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
+
 function TimelineItem({ item, index, openModal }) {
+  const [mounted, setMounted] = useState(false);
   const itemRef = useRef(null);
   const nodeRef = useRef(null);
   const cardRef = useRef(null);
   const connectorRef = useRef(null);
+
+  useEffect(() => setMounted(true), []);
 
   useLayoutEffect(() => {
     const { ScrollTrigger } = require('gsap/ScrollTrigger');
@@ -69,14 +80,15 @@ function TimelineItem({ item, index, openModal }) {
       <article
         ref={cardRef}
         className={styles.item}
-        aria-label={`${item.type === 'experience' ? 'Work' : 'Education'}: ${item.title}`}
       >
         <div className={styles.itemSlot}>
           <span className={`badge ${item.type === 'experience' ? 'badge-experience' : 'badge-education'}`}>
             {item.type}
           </span>
           <div className={styles.itemDates}>
-            <span>{item.startDate} — {item.endDate}</span>
+            {mounted && (
+              <span>{formatDate(item.startDate)} — {formatDate(item.endDate)}</span>
+            )}
           </div>
         </div>
         <h3 className={styles.itemTitle}>{item.title}</h3>

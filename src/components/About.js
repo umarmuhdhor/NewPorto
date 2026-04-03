@@ -1,63 +1,48 @@
 'use client';
-import { useRef, useLayoutEffect } from 'react';
-import { gsap } from 'gsap';
+import { useRef, useEffect } from 'react';
 import styles from './About.module.css';
 
-function Marquee({ text }) {
-  const items = Array(12).fill(text);
-  return (
-    <div className="marquee-wrapper" style={{ opacity: 0.1, marginBottom: '-2rem', scale: '1.1' }}>
-      <div className="marquee-track">
-        {[...items, ...items].map((t, i) => (
-          <span key={i} className="marquee-item" style={{ fontWeight: 900 }}>{t}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function About({ profile, socialLinks }) {
-  const sectionRef = useRef(null);
   const photoColRef = useRef(null);
   const photoFrameRef = useRef(null);
   const imgRef = useRef(null);
   const bioRef = useRef(null);
 
-  useLayoutEffect(() => {
-    const { ScrollTrigger } = require('gsap/ScrollTrigger');
-    gsap.registerPlugin(ScrollTrigger);
+  useEffect(() => {
+    // Only run animations client-side — no SSR conflict
+    let gsap, ScrollTrigger;
+    try {
+      gsap = require('gsap').gsap;
+      ScrollTrigger = require('gsap/ScrollTrigger').ScrollTrigger;
+      gsap.registerPlugin(ScrollTrigger);
+    } catch (e) { return; }
 
-    // 1. Photo Parallax Logic
+    // 1. Photo Parallax + Glint
     const handleMouseMove = (e) => {
       if (!photoColRef.current) return;
       const { left, top, width, height } = photoColRef.current.getBoundingClientRect();
       const x = (e.clientX - left) / width - 0.5;
       const y = (e.clientY - top) / height - 0.5;
 
-      // Tilt the frame
       gsap.to(photoFrameRef.current, {
-        rotateY: x * 15,
-        rotateX: -y * 15,
-        x: x * 20,
-        y: y * 20,
-        duration: 0.6,
-        ease: 'power2.out'
+        rotateY: x * 12, rotateX: -y * 12, x: x * 15, y: y * 15,
+        duration: 0.6, ease: 'power2.out'
+      });
+      gsap.to(imgRef.current, {
+        x: -x * 20, y: -y * 20, scale: 1.12,
+        duration: 0.8, ease: 'power2.out'
       });
 
-      // Move the image slightly more for depth
-      gsap.to(imgRef.current, {
-        x: -x * 30,
-        y: -y * 30,
-        scale: 1.15,
-        duration: 0.8,
-        ease: 'power2.out'
-      });
+      const gx = 50 + x * 100;
+      const gy = 50 + y * 100;
+      photoFrameRef.current?.style.setProperty('--glint-x', `${gx}%`);
+      photoFrameRef.current?.style.setProperty('--glint-y', `${gy}%`);
     };
 
     const handleMouseLeave = () => {
       gsap.to([photoFrameRef.current, imgRef.current], {
-        rotateX: 0, rotateY: 0, x: 0, y: 0, scale: 1.1,
-        duration: 1, ease: 'elastic.out(1, 0.5)'
+        rotateX: 0, rotateY: 0, x: 0, y: 0, scale: 1,
+        duration: 1.5, ease: 'elastic.out(1, 0.4)'
       });
     };
 
@@ -65,60 +50,70 @@ export default function About({ profile, socialLinks }) {
     photoCol?.addEventListener('mousemove', handleMouseMove);
     photoCol?.addEventListener('mouseleave', handleMouseLeave);
 
-    // 2. Bio Staggered Reveal
-    const bioLines = bioRef.current.querySelectorAll(`.${styles.bioLine}`);
-    gsap.fromTo(bioLines,
-      { opacity: 0, y: 40, filter: 'blur(10px)' },
-      {
-        opacity: 1, y: 0, filter: 'blur(0px)',
-        duration: 1.2,
-        stagger: 0.2,
-        ease: 'expo.out',
-        scrollTrigger: {
-          trigger: bioRef.current,
-          start: 'top 80%',
-          toggleActions: 'play none none reverse'
+    // 2. Bio line wipe-in
+    if (bioRef.current) {
+      const bioLines = bioRef.current.querySelectorAll(`.${styles.bioLine}`);
+      gsap.fromTo(bioLines,
+        { clipPath: 'inset(0 0 110% 0)', y: 24 },
+        {
+          clipPath: 'inset(0 0 0% 0)', y: 0,
+          duration: 1.4, stagger: 0.18, ease: 'expo.out',
+          scrollTrigger: {
+            trigger: bioRef.current,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
         }
-      }
-    );
+      );
+
+      // 3. Animated highlighter markers
+      const markers = bioRef.current.querySelectorAll(`.${styles.marker}`);
+      markers.forEach((marker) => {
+        gsap.fromTo(marker,
+          { '--marker-width': '0%' },
+          {
+            '--marker-width': '100%', duration: 0.8, ease: 'power3.out',
+            scrollTrigger: { trigger: marker, start: 'top 90%', toggleActions: 'play none none reverse' }
+          }
+        );
+      });
+    }
 
     return () => {
       photoCol?.removeEventListener('mousemove', handleMouseMove);
       photoCol?.removeEventListener('mouseleave', handleMouseLeave);
+      ScrollTrigger?.getAll().forEach(st => st.kill());
     };
   }, []);
 
   const renderBio = (bio) => {
-    if (!bio) return null;
-    // Split by double newlines or single robust segments
+    if (!bio) return <p className={styles.bioLine} style={{ opacity: 0.5 }}>Bio coming soon...</p>;
     return bio.split('\n').filter(Boolean).map((segment, i) => (
-      <span key={i} className={styles.bioLine}>
+      <p key={i} className={styles.bioLine}>
         {segment.split(/(\*\*[^*]+\*\*)/g).map((part, j) => {
           if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={j}>{part.slice(2, -2)}</strong>;
+            return <span key={j} className={styles.marker}>{part.slice(2, -2)}</span>;
           }
           return part;
         })}
-      </span>
+      </p>
     ));
   };
 
   return (
-    <section id="about" ref={sectionRef} className={styles.aboutSection}>
-      <Marquee text="ABOUT UMAR MUHDHOR" />
-      
+    <section id="about" className={styles.aboutSection}>
       <div className="container">
         <div className={styles.grid}>
-          {/* Photo Column with 3D Effect */}
+          {/* Photo Column */}
           <div className={styles.photoCol} ref={photoColRef}>
             <div className={styles.photoFrame} ref={photoFrameRef}>
               <div className={styles.photoInner}>
                 {profile?.photoUrl ? (
-                  <img 
+                  <img
                     ref={imgRef}
-                    src={profile.photoUrl} 
-                    alt={profile.name} 
-                    className={styles.photo} 
+                    src={profile.photoUrl}
+                    alt={profile?.name || 'Profile'}
+                    className={styles.photo}
                   />
                 ) : (
                   <div className={styles.photoPlaceholder}>
@@ -133,32 +128,33 @@ export default function About({ profile, socialLinks }) {
 
           {/* Content Column */}
           <div className={styles.contentCol}>
-            <p className={styles.label}>// ORIGIN STORY</p>
+            <p className={styles.label}>// WHO AM I</p>
             <h2 className={`section-heading ${styles.name}`}>{profile?.name || 'Your Name'}</h2>
             <p className={styles.titleLine}>{profile?.title || 'Developer & Creator'}</p>
             <div className={styles.divider} />
-            
+
             <div className={styles.bio} ref={bioRef}>
               {renderBio(profile?.bio)}
             </div>
 
             <div className={styles.actions}>
-              <a href="#contact" className="btn-primary"
-                onClick={(e) => { 
-                  e.preventDefault(); 
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); 
+              <a
+                href="#contact"
+                className="btn-primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                GET IN TOUCH &rarr;
+                Let's Collaborate →
               </a>
               {profile?.cvUrl && (
                 <a href={profile.cvUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary">
-                  RESUME.PDF &darr;
+                  Curriculum Vitae ↓
                 </a>
               )}
             </div>
 
-            {/* Social links */}
             {socialLinks?.length > 0 && (
               <div className={styles.socials}>
                 {socialLinks.map((s) => (
@@ -174,4 +170,3 @@ export default function About({ profile, socialLinks }) {
     </section>
   );
 }
-

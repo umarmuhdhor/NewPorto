@@ -2,13 +2,13 @@
 import { useEffect, useState } from 'react';
 import styles from './Hero.module.css';
 
-export default function TypewriterSubtitle({ text }) {
+export default function TypewriterSubtitle({ text, delay = 1000 }) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone] = useState(false);
 
   useEffect(() => {
     let i = 0;
-    // Delay start so page curtain has lifted
+    // Delay start so it syncs with main intro sequence
     const startTimer = setTimeout(() => {
       const interval = setInterval(() => {
         setDisplayed(text.slice(0, i + 1));
@@ -19,9 +19,9 @@ export default function TypewriterSubtitle({ text }) {
         }
       }, 60);
       return () => clearInterval(interval);
-    }, 1000);
+    }, delay);
     return () => clearTimeout(startTimer);
-  }, [text]);
+  }, [text, delay]);
 
   return (
     <span className={styles.subtitle}>

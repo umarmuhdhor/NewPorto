@@ -94,8 +94,37 @@ button { cursor: pointer; font-family: inherit; }
 .btn-sm:hover { box-shadow: 5px 5px 0px var(--black); transform: translate(-1px, -1px); }
 
 /* ─── SECTION BASE ─── */
-.section { padding: 80px 0; }
-.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 100px 0; }
+.container { max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+
+/* ─── SCROLL REVEAL UTILITIES ─── */
+/* Elements start invisible; GSAP/IntersectionObserver toggles .is-visible */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.is-visible { opacity: 1; transform: none; }
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right.is-visible { opacity: 1; transform: none; }
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.45s; }
+.reveal-delay-5 { transition-delay: 0.6s; }
 
 /* ─── MARQUEE ─── */
 .marquee-wrapper {
