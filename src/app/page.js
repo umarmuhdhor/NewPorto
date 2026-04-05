@@ -14,27 +14,31 @@ import MarqueeDivider from '@/components/MarqueeDivider';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata() {
-  const profile = await prisma.profile.findFirst();
-  return {
-    title: profile?.name ? `${profile.name} — Portfolio` : 'Portfolio',
-    description: profile?.bio?.replace(/\*\*/g, '') || 'Personal Portfolio Website',
-    openGraph: {
-      title: profile?.name ? `${profile.name} — Portfolio` : 'Portfolio',
-      description: profile?.bio?.replace(/\*\*/g, '') || 'Personal Portfolio Website',
-      type: 'website',
-    },
-  };
+// Helper: retry once if DB is sleeping (Render free tier cold starts)
+async function safeQuery(fn, fallback) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      if (attempt === 0 && (e.message?.includes('closed') || e.message?.includes('connect'))) {
+        await new Promise(r => setTimeout(r, 800)); // wait for DB to wake
+        continue;
+      }
+      console.error('[DB]', e.message?.slice(0, 120));
+      return fallback;
+    }
+  }
+  return fallback;
 }
 
 export default async function HomePage() {
   const [profile, socialLinks, experiences, tools, projects, certificates] = await Promise.all([
-    prisma.profile.findFirst(),
-    prisma.socialLink.findMany({ orderBy: { order: 'asc' } }),
-    prisma.experience.findMany({ orderBy: { order: 'asc' } }),
-    prisma.tool.findMany({ orderBy: { order: 'asc' } }),
-    prisma.project.findMany({ orderBy: { order: 'asc' } }),
-    prisma.certificate.findMany({ orderBy: { order: 'asc' } }),
+    safeQuery(() => prisma.profile.findFirst(), null),
+    safeQuery(() => prisma.socialLink.findMany({ orderBy: { order: 'asc' } }), []),
+    safeQuery(() => prisma.experience.findMany({ orderBy: { order: 'asc' } }), []),
+    safeQuery(() => prisma.tool.findMany({ orderBy: { order: 'asc' } }), []),
+    safeQuery(() => prisma.project.findMany({ orderBy: { order: 'asc' } }), []),
+    safeQuery(() => prisma.certificate.findMany({ orderBy: { order: 'asc' } }), []),
   ]);
 
   return (

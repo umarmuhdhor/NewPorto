@@ -31,7 +31,7 @@ export default function Footer({ profile, socialLinks }) {
                   <div className={styles.stackBadges}>
                     <span className={styles.stackBadge}>Next.js</span>
                     <span className={styles.stackBadge}>Prisma</span>
-                    <span className={styles.stackBadge}>SQLite</span>
+                    <span className={styles.stackBadge}>PostgreSQL</span>
                   </div>
                 </div>
               </div>
