@@ -73,9 +73,15 @@ export default function Projects({ projects }) {
     }
   }, [selectedProject]);
 
+  const truncateWords = (text, limit = 50) => {
+    const words = text.trim().split(/\s+/);
+    if (words.length <= limit) return text.trim();
+    return words.slice(0, limit).join(' ') + '...';
+  };
+
   const parseFlow = (flow) => {
     if (!flow) return [];
-    return flow.split(/\n|(?<=\.) /).filter(s => s.trim().length > 0);
+    return flow.split(/\n|(?<=\.) /).filter(s => s.trim().length > 0).map(s => truncateWords(s, 50));
   };
 
   return (
@@ -193,7 +199,7 @@ export default function Projects({ projects }) {
               </div>
 
               {/* Right Panel: Content */}
-              <div className={styles.modalInfoPanel}>
+              <div className={styles.modalInfoPanel} data-lenis-prevent>
                 <div className={styles.modalHeaderInfo}>
                   <h3 className={styles.modalTitle}>{selectedProject.title}</h3>
                   <p className={styles.modalOverview}>{selectedProject.description}</p>
