@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import { useEffect, useRef, useState, useLayoutEffect, useMemo } from 'react';
 import { gsap } from 'gsap';
 import styles from './Experience.module.css';
 
@@ -9,6 +9,12 @@ function formatDate(dateStr) {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;
   return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
+
+function truncateWords(text, limit = 50) {
+  const words = text.trim().split(/\s+/);
+  if (words.length <= limit) return text.trim();
+  return words.slice(0, limit).join(' ') + '...';
 }
 
 function TimelineItem({ item, index, openModal }) {
@@ -95,10 +101,10 @@ function TimelineItem({ item, index, openModal }) {
         <p className={styles.itemOrg}>{item.organization}</p>
         <div className={styles.itemDivider} aria-hidden="true" />
         
-        {/* Render description as clean bullets */}
+        {/* Render description as clean bullets - max 3 bullets, 30 words each */}
         <ul className={styles.bulletList}>
           {item.description.split('\n').filter(Boolean).slice(0, 3).map((line, i) => (
-            <li key={i}>{line.replace(/^[-•]\s*/, '').trim()}</li>
+            <li key={i}>{truncateWords(line.replace(/^[-•]\s*/, '').trim(), 30)}</li>
           ))}
         </ul>
 
@@ -118,10 +124,12 @@ export default function Experience({ experiences }) {
   const openModal = (item) => setModalItem(item);
   const closeModal = () => setModalItem(null);
 
-  const allItems = [
-    ...(experiences?.filter(e => e.type === 'experience') || []),
-    ...(experiences?.filter(e => e.type === 'education') || [])
-  ].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+  const allItems = useMemo(() => {
+    return [
+      ...(experiences?.filter(e => e.type === 'experience') || []),
+      ...(experiences?.filter(e => e.type === 'education') || [])
+    ];
+  }, [experiences]);
 
   useLayoutEffect(() => {
     const { ScrollTrigger } = require('gsap/ScrollTrigger');
@@ -172,11 +180,11 @@ export default function Experience({ experiences }) {
               <h3 className={styles.modalTitle}>{modalItem.title}</h3>
               <button className={styles.closeBtn} onClick={closeModal}>✕</button>
             </div>
-            <div className={styles.modalBody}>
+            <div className={styles.modalBody} data-lenis-prevent>
               <div className={styles.modalDescription}>
                 <ul className={styles.bulletList}>
                   {modalItem.description.split('\n').filter(Boolean).map((line, i) => (
-                    <li key={i}>{line.replace(/^[-•]\s*/, '').trim()}</li>
+                    <li key={i}>{truncateWords(line.replace(/^[-•]\s*/, '').trim(), 50)}</li>
                   ))}
                 </ul>
               </div>

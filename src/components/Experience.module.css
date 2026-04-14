@@ -251,6 +251,8 @@
   background: var(--cream);
   scrollbar-width: thin;
   scrollbar-color: var(--black) transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .modalBody::-webkit-scrollbar { width: 6px; }
 .modalBody::-webkit-scrollbar-track { background: transparent; }
